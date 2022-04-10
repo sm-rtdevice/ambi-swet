@@ -14,10 +14,12 @@ class CaptureScreen {
 
     private var startTime = 0L
     private var fps = 0L
+    private val robot = Robot()
 
     @Throws(AWTException::class, IOException::class)
     fun capture() {
-        capture = Robot().createScreenCapture(screenRect)
+        startTime = System.currentTimeMillis()
+        capture = robot.createScreenCapture(screenRect)
         val color = Color(capture.getRGB(100, 100))
         //ImageIO.write(capture, "bmp", File("C:\\pictures\\captured_image.bmp"))
 

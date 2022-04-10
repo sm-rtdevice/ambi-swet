@@ -30,7 +30,7 @@ class ImageProcessorUtils {
                     val red = color.red
                     val green = color.green
 
-                    // Применяем стандартный алгоритм для получения черно-белого изображения
+                    // алгоритм для получения черно-белого изображения
                     val grey = (red * 0.299 + green * 0.587 + blue * 0.114).toInt()
 
                     result.setRGB(x, y, Color(grey, grey, grey).rgb)

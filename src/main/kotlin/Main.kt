@@ -1,10 +1,13 @@
-import com.CaptureScreen
+import com.test_draw.CaptureConfigFrameTest
 
 fun main(args: Array<String>) {
     println("Program ambi-swet was started")
     println("Program arguments: ${args.joinToString()}")
 
-    /*val swet = Swet()
+    //CaptureConfigFrame()
+    CaptureConfigFrameTest()
+
+/*    val swet = Swet()
     swet.init()
     swet.connect()
 
@@ -20,13 +23,13 @@ fun main(args: Array<String>) {
     swet.showRandomScene()
 
     swet.disconnect()
-    */
+*/
 
-    val captureImage = CaptureScreen()
-
-    while (true) {
-        captureImage.capture()
-    }
+//    val captureImage = CaptureScreen()
+//
+//    while (true) {
+//        captureImage.capture()
+//    }
 
     //println("End program")
 }

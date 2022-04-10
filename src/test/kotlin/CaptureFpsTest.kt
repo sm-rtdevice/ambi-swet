@@ -1,4 +1,5 @@
 import mu.KotlinLogging
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.awt.Color
 import java.awt.Rectangle
@@ -17,11 +18,15 @@ class CaptureTest {
     private var fps = 0L
 
     private var numLeds: Int = 94
+    private val robot = Robot()
 
     @Test
+    @Disabled
     fun captureFullHdFpsTest() { // fps: 30
+        startTime = System.currentTimeMillis()
+
         while (true) {
-            capture = Robot().createScreenCapture(screenRect) // 1920*1800
+            capture = robot.createScreenCapture(screenRect) // 1920*1800
             val color = Color(capture.getRGB(100, 100))
 
             ++fps
@@ -34,9 +39,12 @@ class CaptureTest {
     }
 
     @Test
+    @Disabled
     fun capture4KFpsTest() { // fps: 10
+        startTime = System.currentTimeMillis()
+
         while (true) {
-            capture = Robot().createScreenCapture(Rectangle(0, 0, 3840, 2160))
+            capture = robot.createScreenCapture(Rectangle(0, 0, 3840, 2160))
             val color = Color(capture.getRGB(100, 100))
 
             ++fps
@@ -49,12 +57,15 @@ class CaptureTest {
     }
 
     @Test
+    @Disabled
     fun multiCaptureFpsTest() { // fps: 1
+        startTime = System.currentTimeMillis()
+
         while (true) {
             lateinit var color: Color
 
             for (i in 1..numLeds) {
-                capture = Robot().createScreenCapture(Rectangle(0, 0, 100, 100))
+                capture = robot.createScreenCapture(Rectangle(0, 0, 100, 100))
                 color = Color(capture.getRGB(5, 5))
             }
 

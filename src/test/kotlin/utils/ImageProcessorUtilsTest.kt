@@ -1,6 +1,7 @@
 package utils
 
 import com.utils.ImageProcessorUtils
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 class ImageProcessorUtilsTest {
@@ -10,6 +11,7 @@ class ImageProcessorUtilsTest {
     private val avgImagePath = "C:\\pictures\\avg_image.jpg"
 
     @Test
+    @Disabled
     fun toGrayTest() {
         val rgbImage = ImageProcessorUtils.load(rgbImagePath)
         val grayImage = ImageProcessorUtils.toGray(rgbImage)
@@ -17,6 +19,7 @@ class ImageProcessorUtilsTest {
     }
 
     @Test
+    @Disabled
     fun getAverageColorTest() {
         val rgbImage = ImageProcessorUtils.load(rgbImagePath)
         val avgColor = ImageProcessorUtils.getAverageColor(rgbImage)

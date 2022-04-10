@@ -121,6 +121,7 @@ class Swet {
         val lo: Byte = 0
         val chk: Byte = 0x55
 
+        buffer.clear()
         buffer.addAll(listOf(hi, lo, chk)) // CRC?
 
         buffer.addAll(listOf(0x7F, 0x00, 0x00)) // 1 R
@@ -139,6 +140,7 @@ class Swet {
         val lo: Byte = 0
         val chk: Byte = 0x55
 
+        buffer.clear()
         buffer.addAll(listOf('A'.code.toByte(), 'd'.code.toByte(), 'a'.code.toByte())) // заголовок
         buffer.addAll(listOf(hi, lo, chk)) // CRC?
 
@@ -154,6 +156,7 @@ class Swet {
         val lo: Byte = 0
         val chk: Byte = 0x55
 
+        buffer.clear()
         buffer.addAll(listOf('A'.code.toByte(), 'd'.code.toByte(), 'a'.code.toByte())) // заголовок
         buffer.addAll(listOf(hi, lo, chk)) // CRC?
 
