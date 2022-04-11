@@ -1,5 +1,7 @@
-package com
+package com.svet.capture
 
+import com.svet.config.CaptureConfig
+import com.svet.utils.Utils
 import jssc.SerialPort
 import jssc.SerialPortException
 import jssc.SerialPortList
@@ -8,24 +10,30 @@ import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 
-class Swet {
+class Svet {
 
     private var portNumber: String = "COM1"
     private lateinit var serialPort: SerialPort
-    private var numLeds: Int = 0
 
     @Volatile private var doWork = true
     private val buffer = ArrayList<Byte>()
     private var detectPorts: Boolean = false
     private var arduinoRebootTimeout = 0L
 
+    private lateinit var config: CaptureConfig
+
+    val captureImage = CaptureScreen()
+
     private fun loadConfigs() {
         logger.info("Loading configuration...")
         // TODO: read configs from config file...
-        numLeds = 94
+
         //portNumber = "COM4"
         detectPorts = true
         arduinoRebootTimeout = 1500
+
+        config = CaptureConfig()
+        config.init()
 
         logger.info("Loading configuration done")
     }
@@ -54,6 +62,7 @@ class Swet {
 
     fun connect() {
         logger.info("Connect to COM-$portNumber")
+        var fault = false
 
         try {
             serialPort.openPort()
@@ -63,17 +72,25 @@ class Swet {
                 SerialPort.STOPBITS_1,
                 SerialPort.PARITY_NONE
             )
+        } catch (ex: UninitializedPropertyAccessException){
+            logger.error("Uninitialized property exception during connect to COM-$portNumber error", ex)
+            fault = true
         } catch (ex: SerialPortException) {
             logger.error("Serial port exception during connect to COM-$portNumber error", ex)
+            fault = true
         } catch (ex: UnsupportedEncodingException) {
             logger.error("Unsupported encoding exception during connect to COM-$portNumber error", ex)
+            fault = true
         }
 
-        Thread.sleep(arduinoRebootTimeout) // arduino reboot timeout
+        doWork = if (!fault) {
+            Thread.sleep(arduinoRebootTimeout) // arduino reboot timeout
+            logger.info("Connect to COM-$portNumber success")
+            true
+        } else {
+            false
+        }
 
-        doWork = true
-
-        logger.info("Connect to COM-$portNumber success")
     }
 
     fun disconnect() {
@@ -99,7 +116,7 @@ class Swet {
         serialPort.writeBytes(buffer.toByteArray())
     }
 
-    fun showScene() {
+    fun showingBuffer() {
         // TODO: work in thread
         while (doWork) {
             serialPort.writeBytes(buffer.toByteArray())
@@ -110,64 +127,22 @@ class Swet {
     fun showRandomScene() {
         // TODO: work in thread
         while (doWork) {
-            preparerRandomBuffer()
-            serialPort.writeBytes(buffer.toByteArray())
+            serialPort.writeBytes(Utils.preparerRandomBuffer(config).toByteArray())
             //Thread.sleep(10L)
         }
     }
 
-    fun prepareBuffer() {
-        val hi: Byte = 0
-        val lo: Byte = 0
-        val chk: Byte = 0x55
-
-        buffer.clear()
-        buffer.addAll(listOf(hi, lo, chk)) // CRC?
-
-        buffer.addAll(listOf(0x7F, 0x00, 0x00)) // 1 R
-        buffer.addAll(listOf(0x00, 0x7F, 0x00)) // 2 G
-        buffer.addAll(listOf(0x00, 0x00, 0x7F)) // 3 B
-        buffer.addAll(listOf(-0x7F, 0x00, 0x00)) // 4 R
-        buffer.addAll(listOf(0x00, -0x7F, 0x00)) // 5 G
-        buffer.addAll(listOf(0x00, 0x00, 0)) // 6 B
-        for (i in 1..numLeds-6) {
-            buffer.addAll(listOf(0, 10, 10)) // R, G, B [-0x7F .. 0x7F]
+    fun showScene() {
+        // TODO: work in thread
+        while (doWork) {
+            serialPort.writeBytes(
+                captureImage.toAdaBuffer(
+                    captureImage.getRegionsCaptureColors(captureImage.capture(), config),
+                    config
+                ).toByteArray()
+            )
+            //Thread.sleep(1L)
         }
     }
 
-    fun prepareBufferForAdaSketch() {
-        val hi: Byte = 0
-        val lo: Byte = 0
-        val chk: Byte = 0x55
-
-        buffer.clear()
-        buffer.addAll(listOf('A'.code.toByte(), 'd'.code.toByte(), 'a'.code.toByte())) // заголовок
-        buffer.addAll(listOf(hi, lo, chk)) // CRC?
-
-        for (i in 1..numLeds) {
-            buffer.addAll(listOf(1, -128, 0)) // R, G, B
-        }
-    }
-
-    fun preparerRandomBuffer() {
-        val bright: Byte = 100 // 1..127: 1 - max яркость, 127 - min яркость
-
-        val hi: Byte = 0
-        val lo: Byte = 0
-        val chk: Byte = 0x55
-
-        buffer.clear()
-        buffer.addAll(listOf('A'.code.toByte(), 'd'.code.toByte(), 'a'.code.toByte())) // заголовок
-        buffer.addAll(listOf(hi, lo, chk)) // CRC?
-
-        for (i in 1..numLeds) {
-            buffer.addAll(listOf(
-//            (-128..127).random().toByte(),  // R
-//            (-128..127).random().toByte(),  // G
-//            (-128..127).random().toByte())) // B
-            (0..127/bright).random().toByte(),  // R
-            (0..127/bright).random().toByte(),  // G
-            (0..127/bright).random().toByte())) // B
-        }
-    }
 }

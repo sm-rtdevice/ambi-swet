@@ -1,13 +1,14 @@
-package com.configs
+package com.svet.config
 
-import com.enums.OutputDirection
+import com.svet.enums.OutputDirection
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 
 class CaptureConfig {
 
-    private val numOfLeds = 94
+    val ledsCount = 94
+    val initialCapacity = 94 * 3 + 3 + 3
     lateinit var outputDirection: OutputDirection
 
     // device - устройство захвата
@@ -35,7 +36,7 @@ class CaptureConfig {
     val bottomCutout: Int = 200
 
     // координаты областей захвата
-    val positions: MutableList<Position> = ArrayList(numOfLeds) // 94 num of LED's
+    val positions: MutableList<Position> = ArrayList(ledsCount) // 94 num of LED's
 
     // длина отрезка выносной линии
     val section: Int = 20
@@ -43,16 +44,13 @@ class CaptureConfig {
     // ширина рамки
     val border: Int = 1
 
-    private fun load() { // TODO: загрузить координаты
+    private fun load():Boolean {
+//      TODO: загрузить координаты из файла конфигурации return true
+        return false
+    }
 
+    fun defaultConfig() {
         outputDirection = OutputDirection.CLOCKWISE
-
-
-
-// TODO: загрузить координаты из файла конфигурации
-//        for (i in 0 until numOfLeds) {
-//            positions.add(Position(0, 0))
-//        }
 
         val hArea = width / 2 - bottomCutout / 2
 
@@ -67,9 +65,7 @@ class CaptureConfig {
         }
 
         // области захвата слева
-//TODO: развернуть направление
         var vArea = (height - captureRegionHeight * 2) /* - borderH )*/ / leftCount
-
 //        var verticalOffset = captureRegionHeight
 //        for (i in 0 until leftCount) {
 //            val y = verticalOffset + (vArea / 2 - captureRegionHeight / 2)
@@ -77,7 +73,6 @@ class CaptureConfig {
 //            //val x = width - captureRegionWidth /* - borderV*/ // <-- отступ справа
 //            positions.add(Position(0, y))
 //        }
-
         var verticalOffset = vArea * leftCount
         for (i in 0 until leftCount) {
             val y = verticalOffset + (vArea / 2 - captureRegionHeight / 2)
@@ -112,15 +107,20 @@ class CaptureConfig {
             val y = height - captureRegionHeight
             positions.add(Position(x, y))
         }
-
     }
 
     fun init() {
-        load()
+        if (!load()) {
+            logger.info("Create default configuration")
+            defaultConfig()
+        }
+
         if (positions.isEmpty()) {
-            logger.warn("Capture region configuration was not loaded")
+            logger.warn("Capture regions configuration was not loaded")
         }
     }
+
+    private fun save() {}
 
     data class Position(
         var x: Int,

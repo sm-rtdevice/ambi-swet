@@ -1,3 +1,4 @@
+import com.svet.config.CaptureConfig
 import mu.KotlinLogging
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -10,6 +11,7 @@ import java.awt.image.BufferedImage
 private val logger = KotlinLogging.logger {}
 
 class CaptureTest {
+   // private lateinit var config: CaptureConfig
 
     private val screenRect = Rectangle(Toolkit.getDefaultToolkit().screenSize) // 1920*1800
     private lateinit var capture: BufferedImage
@@ -73,6 +75,29 @@ class CaptureTest {
             if (System.currentTimeMillis() - startTime > 1000) {
                 startTime = System.currentTimeMillis()
                 println("$color; fps: $fps")
+                fps = 0
+            }
+        }
+    }
+
+    @Test
+    @Disabled
+    fun multiCapture4RegionsFpsTest() { // fps: 16
+
+        val config = CaptureConfig()
+        startTime = System.currentTimeMillis()
+
+        while (true) {
+           capture = robot.createScreenCapture(Rectangle(0, 0, config.width, config.captureRegionHeight))
+           capture = robot.createScreenCapture(Rectangle(0,config.height - config.captureRegionHeight, config.width, config.captureRegionHeight))
+           capture = robot.createScreenCapture(Rectangle(0, 0, config.captureRegionWidth, config.height))
+           capture = robot.createScreenCapture(Rectangle(config.width - config.captureRegionWidth, 0, config.captureRegionWidth, config.height))
+
+            ++fps
+            if (System.currentTimeMillis() - startTime > 1000) {
+                startTime = System.currentTimeMillis()
+                //println("$color; fps: $fps")
+                println("fps: $fps")
                 fps = 0
             }
         }

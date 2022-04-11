@@ -1,6 +1,5 @@
-package utils
 
-import com.utils.ImageProcessorUtils
+import com.svet.processor.ImageProcessorUtils
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 

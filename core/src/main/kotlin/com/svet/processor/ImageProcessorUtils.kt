@@ -1,4 +1,4 @@
-package com.utils
+package com.svet.processor
 
 import java.awt.Color
 import java.awt.image.BufferedImage

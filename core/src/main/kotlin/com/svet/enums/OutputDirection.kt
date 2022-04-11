@@ -1,4 +1,4 @@
-package com.enums
+package com.svet.enums
 
 // направление вывода цветов на LED ленту:
 enum class OutputDirection {
