@@ -4,15 +4,19 @@ import com.svet.capture.CaptureScreen
 import com.svet.config.CaptureConfig
 import com.svet.processor.ImageProcessorUtils
 import java.awt.*
+import java.awt.event.ActionEvent
+import java.awt.event.ActionListener
 import java.awt.image.BufferedImage
 import javax.swing.JPanel
+import javax.swing.Timer
 
 
-class CaptureConfigPanel internal constructor() : JPanel() {
+class CaptureConfigPanel internal constructor() : JPanel(), ActionListener {
 
     private val config: CaptureConfig
     private val verticalFontAlignCorrection = 3
     private val captureScreen: CaptureScreen
+    private val timer: Timer = Timer(100, this)
 
     init {
         this.preferredSize = Dimension(640, 480)
@@ -20,6 +24,14 @@ class CaptureConfigPanel internal constructor() : JPanel() {
         config = CaptureConfig()
         config.init()
         captureScreen = CaptureScreen()
+
+        timer.start()
+    }
+
+    override fun actionPerformed(e: ActionEvent?) {
+        if (e?.source == timer) {
+            repaint()
+        }
     }
 
     override fun paint(graphics: Graphics) {
@@ -33,7 +45,7 @@ class CaptureConfigPanel internal constructor() : JPanel() {
 
         drawCaptureRegionsColor(g2D)
 
-        //drawCaptureRegions(graphics)
+//        drawCaptureRegions(graphics)
 
         drawCaptureRegionsAvgColors(graphics)
     }
