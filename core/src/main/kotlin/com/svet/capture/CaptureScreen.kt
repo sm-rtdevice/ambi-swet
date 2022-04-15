@@ -12,28 +12,11 @@ private val logger = KotlinLogging.logger {}
 class CaptureScreen {
 
     private val screenRect = Rectangle(Toolkit.getDefaultToolkit().screenSize)
-    private lateinit var capture: BufferedImage // volatile
-
-    private var startTime = 0L
-    private var fps = 0L
     private val robot = Robot()
 
     @Throws(AWTException::class, IOException::class)
     fun capture() : BufferedImage {
-        startTime = System.currentTimeMillis()
-        capture = robot.createScreenCapture(screenRect)
-        //ImageIO.write(capture, "bmp", File("C:\\pictures\\captured_image.bmp"))
-
-        ++fps
-        if (System.currentTimeMillis() - startTime > 1000) {
-            startTime = System.currentTimeMillis()
-//            val color = Color(capture.getRGB(100, 100))
-//            println("$color; fps: $fps")
-            println("fps: $fps")
-            fps = 0
-        }
-
-        return capture
+        return robot.createScreenCapture(screenRect)
     }
 
     // определение усредненного цвета областей захвата
