@@ -25,6 +25,7 @@ class CaptureConfigFrame internal constructor() : JFrame("Press ESC to exit") {
             override fun keyPressed(evt: KeyEvent) {
                 if (evt.keyCode == KeyEvent.VK_ESCAPE) {
                     println("close frame")
+                    panel.timer.stop()
                     dispose() // exitProcess(0)
                 }
             }

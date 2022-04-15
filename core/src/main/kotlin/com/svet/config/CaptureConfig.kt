@@ -33,6 +33,7 @@ class CaptureConfig {
     val bottomCountR: Int = 13
     val bottomCountL: Int = 13
 
+    // вырез снизу (в пикселях)
     val bottomCutout: Int = 200
 
     // координаты областей захвата
