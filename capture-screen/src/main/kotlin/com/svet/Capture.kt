@@ -1,6 +1,7 @@
 package com.svet
 
 import com.svet.capture.Svet
+import java.awt.Color
 
 fun main(args: Array<String>) {
     println("Program ambient-svet-capture was started")
@@ -10,24 +11,12 @@ fun main(args: Array<String>) {
     svet.init()
     svet.connect()
 
-//    svet.prepareBufferForAdaSketch()
-//    svet.prepareBuffer()
-//    svet.preparerRandomBuffer()
-//    svet.show()
-//    svet.showScene()
-//    for (i in 1..12) {
-//        svet.show()
-//    }
+    svet.showScene()
 
-    svet.showRandomScene()
+//    svet.showSolidColor(Color(0,0,0))
+//    Thread.sleep(1000)
 
     svet.disconnect()
-
-//    val captureImage = CaptureScreen()
-//
-//    while (true) {
-//        captureImage.capture()
-//    }
 
     println("End program")
 }

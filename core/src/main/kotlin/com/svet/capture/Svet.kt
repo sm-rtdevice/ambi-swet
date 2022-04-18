@@ -7,6 +7,7 @@ import jssc.SerialPortException
 import jssc.SerialPortList
 import java.io.UnsupportedEncodingException
 import mu.KotlinLogging
+import java.awt.Color
 
 private val logger = KotlinLogging.logger {}
 
@@ -22,13 +23,15 @@ class Svet {
 
     private lateinit var config: CaptureConfig
 
-    val captureImage = CaptureScreen()
+    private val captureScreen = CaptureScreen()
+
+    private var fpsTime = System.currentTimeMillis()
 
     private fun loadConfigs() {
         logger.info("Loading configuration...")
         // TODO: read configs from config file...
 
-        //portNumber = "COM4"
+        portNumber = "COM3"
         detectPorts = true
         arduinoRebootTimeout = 1500
 
@@ -136,13 +139,21 @@ class Svet {
         // TODO: work in thread
         while (doWork) {
             serialPort.writeBytes(
-                captureImage.toAdaBuffer(
-                    captureImage.getRegionsCaptureColors(captureImage.capture(), config),
+                captureScreen.updateAdaBuffer(
+                    captureScreen.getRegionsCaptureColors(captureScreen.capture(), config),
                     config
                 ).toByteArray()
             )
-            //Thread.sleep(1L)
+
+            print("\rFPS: ${1000L / (System.currentTimeMillis() - fpsTime)}")
+            fpsTime = System.currentTimeMillis()
         }
+    }
+
+    fun showSolidColor(color: Color) {
+        serialPort.writeBytes(
+            captureScreen.updateAdaBuffer(color, config).toByteArray()
+        )
     }
 
 }
