@@ -10,7 +10,6 @@ fun main(args: Array<String>) {
     val svet = Svet()
     svet.init()
     svet.connect()
-
     svet.showScene()
 
 //    svet.showSolidColor(Color(0,0,0))
