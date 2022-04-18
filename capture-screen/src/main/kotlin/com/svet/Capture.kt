@@ -9,25 +9,9 @@ fun main(args: Array<String>) {
     val svet = Svet()
     svet.init()
     svet.connect()
-
-//    svet.prepareBufferForAdaSketch()
-//    svet.prepareBuffer()
-//    svet.preparerRandomBuffer()
-//    svet.show()
-//    svet.showScene()
-//    for (i in 1..12) {
-//        svet.show()
-//    }
-
-    svet.showRandomScene()
+    svet.showScene()
 
     svet.disconnect()
-
-//    val captureImage = CaptureScreen()
-//
-//    while (true) {
-//        captureImage.capture()
-//    }
 
     println("End program")
 }

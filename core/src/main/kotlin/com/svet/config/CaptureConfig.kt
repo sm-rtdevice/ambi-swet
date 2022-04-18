@@ -8,7 +8,7 @@ private val logger = KotlinLogging.logger {}
 class CaptureConfig {
 
     val ledsCount = 94
-    val initialCapacity = 94 * 3 + 3 + 3
+    val initialCapacity = ledsCount * 3 + 3 + 3
     lateinit var outputDirection: OutputDirection
 
     // device - устройство захвата

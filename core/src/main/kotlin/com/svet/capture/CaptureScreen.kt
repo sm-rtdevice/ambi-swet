@@ -5,7 +5,6 @@ import com.svet.processor.ImageProcessorUtils
 import mu.KotlinLogging
 import java.awt.*
 import java.awt.image.BufferedImage
-import java.io.IOException
 
 private val logger = KotlinLogging.logger {}
 
@@ -13,8 +12,19 @@ class CaptureScreen {
 
     private val screenRect = Rectangle(Toolkit.getDefaultToolkit().screenSize)
     private val robot = Robot()
+    private var buffer: ArrayList<Byte> = ArrayList<Byte>(94)
 
-    @Throws(AWTException::class, IOException::class)
+    init {
+        buffer.addAll(listOf('A'.code.toByte(), 'd'.code.toByte(), 'a'.code.toByte()))
+        val hi: Byte = 0
+        val lo: Byte = 0
+        val chk: Byte = 0x55
+        buffer.addAll(listOf(hi, lo, chk))
+        for (i in 6 + 1..288) {
+            buffer.add(0)
+        }
+    }
+
     fun capture() : BufferedImage {
         return robot.createScreenCapture(screenRect)
     }
@@ -42,21 +52,15 @@ class CaptureScreen {
         return result
     }
 
-    fun toAdaBuffer(regionCaptureColors: List<Color>, captureConfig: CaptureConfig): List<Byte> {
-
-        val buffer = ArrayList<Byte>(captureConfig.initialCapacity)
-
-        val hi: Byte = 0
-        val lo: Byte = 0
-        val chk: Byte = 0x55
-
-        buffer.addAll(listOf('A'.code.toByte(), 'd'.code.toByte(), 'a'.code.toByte())) // заголовок
-        buffer.addAll(listOf(hi, lo, chk)) // CRC?
-
-        for (i in regionCaptureColors.indices step 3) {
-            buffer[i] = regionCaptureColors[i].red.toByte()
-            buffer[i + 1] = regionCaptureColors[i + 1].green.toByte()
-            buffer[i + 2] = regionCaptureColors[i + 2].blue.toByte()
+    fun updateAdaBuffer(regionCaptureColors: List<Color>, captureConfig: CaptureConfig): List<Byte> {
+//        buffer[0..287]
+//        regionCaptureColors[0..93]
+        val capOffset = 6
+        val step = 3
+        for (i in 0 until captureConfig.ledsCount) {
+            buffer[capOffset + step * i] = regionCaptureColors[i].red.toByte()
+            buffer[capOffset + step * i + 1] = regionCaptureColors[i].green.toByte()
+            buffer[capOffset + step * i + 2] = regionCaptureColors[i].blue.toByte()
         }
 
         return buffer
