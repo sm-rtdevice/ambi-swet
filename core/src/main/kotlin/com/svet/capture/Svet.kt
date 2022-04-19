@@ -5,19 +5,20 @@ import com.svet.utils.Utils
 import jssc.SerialPort
 import jssc.SerialPortException
 import jssc.SerialPortList
-import java.io.UnsupportedEncodingException
 import mu.KotlinLogging
 import java.awt.Color
+import kotlinx.coroutines.*
+import java.io.UnsupportedEncodingException
+import kotlin.system.measureTimeMillis
 
 private val logger = KotlinLogging.logger {}
 
 class Svet {
 
     private var portNumber: String = "COM1"
-    private lateinit var serialPort: SerialPort
+    private var serialPort: SerialPort? = null
 
     @Volatile private var doWork = true
-    private val buffer = ArrayList<Byte>()
     private var detectPorts: Boolean = false
     private var arduinoRebootTimeout = 0L
 
@@ -26,6 +27,9 @@ class Svet {
     private val captureScreen = CaptureScreen()
 
     private var fpsTime = System.currentTimeMillis()
+
+    private var job: Job = Job()
+    private var scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     private fun loadConfigs() {
         logger.info("Loading configuration...")
@@ -64,31 +68,37 @@ class Svet {
     }
 
     fun connect() {
-        logger.info("Connect to COM-$portNumber")
-        var fault = false
+        if (serialPort == null) {
+            logger.warn("Port $portNumber is not available")
+            doWork = false
+            return
+        }
 
+        logger.info("Connect to port $portNumber")
+
+        var fault = true
         try {
-            serialPort.openPort()
-            serialPort.setParams(
+            serialPort!!.openPort()
+            serialPort!!.setParams(
                 SerialPort.BAUDRATE_115200,
                 SerialPort.DATABITS_8,
                 SerialPort.STOPBITS_1,
                 SerialPort.PARITY_NONE
             )
+            fault = false
         } catch (ex: UninitializedPropertyAccessException){
-            logger.error("Uninitialized property exception during connect to COM-$portNumber error", ex)
-            fault = true
+            logger.error("Uninitialized property exception during connect to port $portNumber error", ex)
         } catch (ex: SerialPortException) {
-            logger.error("Serial port exception during connect to COM-$portNumber error", ex)
-            fault = true
+            logger.error("Serial port exception during connect to port $portNumber error", ex)
         } catch (ex: UnsupportedEncodingException) {
-            logger.error("Unsupported encoding exception during connect to COM-$portNumber error", ex)
-            fault = true
+            logger.error("Unsupported encoding exception during connect to port $portNumber error", ex)
+        } catch (ex: Exception) {
+            logger.error("Connect to port $portNumber error", ex)
         }
 
         doWork = if (!fault) {
             Thread.sleep(arduinoRebootTimeout) // arduino reboot timeout
-            logger.info("Connect to COM-$portNumber success")
+            logger.info("Connect to port $portNumber success")
             true
         } else {
             false
@@ -96,54 +106,47 @@ class Svet {
 
     }
 
-    fun disconnect() {
-        logger.info("Disconnect from COM-$portNumber")
-
+    suspend fun disconnect() {
         doWork = false
-        try {
-            serialPort.closePort()
-        } catch (ex: SerialPortException) {
-            logger.error("Disconnect from COM-$portNumber error", ex)
+        job.join()
+
+        if (serialPort == null) {
+            return
         }
 
-        logger.info("Disconnect from COM-$portNumber success")
+        logger.info("Disconnect from port $portNumber")
+        try {
+            serialPort?.closePort()
+        } catch (ex: SerialPortException) {
+            logger.error("Disconnect from port $portNumber error", ex)
+            return
+        }
+
+        logger.info("Disconnect from port $portNumber success")
     }
 
-    fun reconnect() {
-        logger.info("Reconnect to COM-$portNumber")
+    suspend fun reconnect() {
+        logger.info("Reconnect to port $portNumber")
         disconnect()
         connect()
     }
 
-    fun show() {
-        serialPort.writeBytes(buffer.toByteArray())
-    }
-
-    fun showingBuffer() {
-        // TODO: work in thread
-        while (doWork) {
-            serialPort.writeBytes(buffer.toByteArray())
-            //Thread.sleep(1L)
-        }
-    }
-
     fun showRandomScene() {
-        // TODO: work in thread
         while (doWork) {
-            serialPort.writeBytes(Utils.preparerRandomBuffer(config).toByteArray())
-            //Thread.sleep(10L)
+            serialPort?.writeBytes(Utils.preparerRandomBuffer(config).toByteArray())
+            Thread.sleep(1L)
         }
     }
 
     fun showScene() {
-        // TODO: work in thread
         while (doWork) {
-            serialPort.writeBytes(
+            serialPort?.writeBytes(
                 captureScreen.updateAdaBuffer(
                     captureScreen.getRegionsCaptureColors(captureScreen.capture(), config),
                     config
                 ).toByteArray()
             )
+            Thread.sleep(1L)
 
             print("\rFPS: ${1000L / (System.currentTimeMillis() - fpsTime)}")
             fpsTime = System.currentTimeMillis()
@@ -151,9 +154,36 @@ class Svet {
     }
 
     fun showSolidColor(color: Color) {
-        serialPort.writeBytes(
+        serialPort?.writeBytes(
             captureScreen.updateAdaBuffer(color, config).toByteArray()
         )
+    }
+
+    suspend fun launchCapture() {
+        if (serialPort == null) {
+            logger.info("COM port is not available, capture is not Launched")
+            return
+        }
+
+        job = scope.launch {
+            while (doWork) {
+                val elapsedTime = measureTimeMillis {
+
+                    serialPort?.writeBytes(
+                        captureScreen.updateAdaBuffer(
+                            captureScreen.getRegionsCaptureColors(captureScreen.capture(), config),
+                            config
+                        ).toByteArray()
+                    )
+
+                    delay(5000)
+                }
+                print("\rFPS: ${1000L / (elapsedTime + 1)}; elapsed: $elapsedTime ms")
+            }
+            logger.info("Capture stopped")
+        }
+
+        logger.info("Capture Launched")
     }
 
 }

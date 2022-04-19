@@ -31,7 +31,20 @@
         <kotlin.logging.jvm.version>2.1.21</kotlin.logging.jvm.version>
         <logback.classic.version>1.2.11</logback.classic.version>
         <junit.jupiter.engine.version>5.6.0</junit.jupiter.engine.version>
+        <kotlinx-coroutines-core.version>1.6.1</kotlinx-coroutines-core.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core -->
+            <dependency>
+                <groupId>org.jetbrains.kotlinx</groupId>
+                <artifactId>kotlinx-coroutines-core</artifactId>
+                <version>${kotlinx-coroutines-core.version}</version>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <repositories>
         <repository>

@@ -12,7 +12,7 @@ class CaptureScreen {
 
     private val screenRect = Rectangle(Toolkit.getDefaultToolkit().screenSize)
     private val robot = Robot()
-    private var buffer: ArrayList<Byte> = ArrayList<Byte>(94)
+    private var buffer = ArrayList<Byte>(288)
 
     init {
         buffer.addAll(listOf('A'.code.toByte(), 'd'.code.toByte(), 'a'.code.toByte()))
