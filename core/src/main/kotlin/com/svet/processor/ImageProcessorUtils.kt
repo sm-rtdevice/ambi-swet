@@ -1,5 +1,6 @@
 package com.svet.processor
 
+import com.svet.config.ImageFormat
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
@@ -19,6 +20,11 @@ class ImageProcessorUtils {
             ImageIO.write(image, "jpg", output)
         }
 
+        fun save(image: BufferedImage, fileName: String, imageFormat: ImageFormat) {
+            val output = File(fileName)
+            ImageIO.write(image, imageFormat.format, output)
+        }
+
         fun toGray(source: BufferedImage): BufferedImage {
             val result = BufferedImage(source.width, source.height, source.type)
 
@@ -30,7 +36,7 @@ class ImageProcessorUtils {
                     val red = color.red
                     val green = color.green
 
-                    // алгоритм для получения черно-белого изображения
+                    // алгоритм для получения изображения в оттенках серого
                     val grey = (red * 0.299 + green * 0.587 + blue * 0.114).toInt()
 
                     result.setRGB(x, y, Color(grey, grey, grey).rgb)
