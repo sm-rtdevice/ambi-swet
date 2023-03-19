@@ -1,6 +1,6 @@
 package com.svet.processor
 
-import com.svet.config.ImageFormat
+import com.svet.enums.ImageFormat
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File

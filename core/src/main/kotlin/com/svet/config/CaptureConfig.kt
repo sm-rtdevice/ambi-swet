@@ -5,52 +5,50 @@ import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 
+/**
+ * Конфигурация захвата экрана.
+ **/
 class CaptureConfig {
-
-    val ledsCount = 94
-    val initialCapacity = ledsCount * 3 + 3 + 3
-    lateinit var outputDirection: OutputDirection
-
-    // device - устройство захвата
-    // Rectangle - размеры экрана
-    val width: Int = 1920
-    val height: Int = 1080
-
-    // высота и ширина одласти захвата для получения усредненного цвета
-    var captureRegionWidth: Int = 50
-    var captureRegionHeight: Int = 50
 
     // количество зон:
     // с верху 32
     // по вертиккали 20
     // вырез снизу 6
 
-    // всего LED: 94
-    // numOfLeds = topCount + leftCount + rightCount + bottomCountR + bottomCountL
-    val topCount: Int = 32
-    val leftCount: Int = 18
-    val rightCount: Int = 18
-    val bottomCountR: Int = 13
-    val bottomCountL: Int = 13
+    var topCount: Int = 32
+    var leftCount: Int = 18
+    var rightCount: Int = 18
+    var bottomCountR: Int = 13
+    var bottomCountL: Int = 13
 
-    // вырез снизу (в пикселях)
-    val bottomCutout: Int = 200
+    // всего LED: 94
+    // ledsCount = topCount + leftCount + rightCount + bottomCountR + bottomCountL
+    var ledsCount = 94
+    var initialCapacity = ledsCount * 3 + 3 + 3
+    var outputDirection: OutputDirection = OutputDirection.CLOCKWISE
+
+    // device - устройство захвата
+    // Rectangle - размеры экрана (в пикселях)
+    var width: Int = 1920
+    var height: Int = 1080
+
+    // высота и ширина области захвата (в пикселях) для получения усредненного цвета
+    var captureRegionWidth: Int = 50
+    var captureRegionHeight: Int = 50
+
+    // вырез снизу по центру (в пикселях)
+    var bottomCutout: Int = 200
 
     // координаты областей захвата
-    val positions: MutableList<Position> = ArrayList(ledsCount) // 94 num of LED's
+    var positions: MutableList<Position> = ArrayList(ledsCount) // 94 num of LED's
 
     // длина отрезка выносной линии
-    val section: Int = 20
+    var section: Int = 20
 
     // ширина рамки
-    val border: Int = 1
+    var border: Int = 1
 
-    private fun load():Boolean {
-//      TODO: загрузить координаты из файла конфигурации return true
-        return false
-    }
-
-    fun defaultConfig() {
+    private fun defaultConfig() {
         outputDirection = OutputDirection.CLOCKWISE
 
         val hArea = width / 2 - bottomCutout / 2
@@ -110,22 +108,18 @@ class CaptureConfig {
         }
     }
 
-    fun init() {
-        if (!load()) {
-            logger.info("Create default configuration")
-            defaultConfig()
-        }
+    data class Position(
+        var x: Int = 0,
+        var y: Int = 0
+    )
 
-        if (positions.isEmpty()) {
-            logger.warn("Capture regions configuration was not loaded")
+    companion object {
+        fun defaultConfig(): CaptureConfig {
+            logger.info("Create default configuration")
+            val result = CaptureConfig()
+            result.defaultConfig()
+            return result
         }
     }
-
-    private fun save() {}
-
-    data class Position(
-        var x: Int,
-        var y: Int
-    )
 
 }

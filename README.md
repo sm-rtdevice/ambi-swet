@@ -9,6 +9,9 @@ https://micro-pi.ru/jssc-%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%B0%D0%B5%D0%BC-com-%D
 ### Репозиторий библиотеки
 https://mvnrepository.com/artifact/io.github.java-native/jssc/2.9.4
 
+### Библиотека FastLED для работы с адресной светодиодной лентой
+https://github.com/FastLED/FastLED
+
 ### Команды для linux
 ### Display Detected System’s Serial Support Under Linux
 dmesg | grep tty

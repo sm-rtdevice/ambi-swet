@@ -1,6 +1,6 @@
 package com.svet.capture
 
-import com.svet.config.CaptureConfig
+import com.svet.config.SvetConfig
 import com.svet.utils.Utils
 import jssc.SerialPort
 import jssc.SerialPortException
@@ -14,34 +14,19 @@ import kotlin.system.measureTimeMillis
 private val logger = KotlinLogging.logger {}
 
 class Svet {
-
-    private var portNumber: String = "COM1"
+    private val svetConfig = SvetConfig()
     private var serialPort: SerialPort? = null
-
-    @Volatile private var doWork = true
-    private var detectPorts: Boolean = false
-    private var arduinoRebootTimeout = 0L
-
-    private lateinit var config: CaptureConfig
-
     private val captureScreen = CaptureScreen()
-
-    private var fpsTime = System.currentTimeMillis()
-
     private var job: Job = Job()
     private var scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
+    @Volatile private var doWork = true
+
     private fun loadConfigs() {
         logger.info("Loading configuration...")
-        // TODO: read configs from config file...
-
-        portNumber = "COM3"
-        detectPorts = true
-        arduinoRebootTimeout = 1500
-
-        config = CaptureConfig()
-        config.init()
-
+        // test configuration
+        svetConfig.connectConfig.portNumber = "COM4"
+        svetConfig.connectConfig.detectPorts = true
         logger.info("Loading configuration done")
     }
 
@@ -50,7 +35,7 @@ class Svet {
 
         loadConfigs()
 
-        if (detectPorts) {
+        if (svetConfig.connectConfig.detectPorts) {
             val portNames = SerialPortList.getPortNames()
             if (portNames.isNotEmpty()) {
                 for (portName in portNames) {
@@ -62,19 +47,19 @@ class Svet {
             }
         }
 
-        serialPort = SerialPort(portNumber)
+        serialPort = SerialPort(svetConfig.connectConfig.portNumber)
 
         logger.info("Initialization done")
     }
 
     fun connect() {
         if (serialPort == null) {
-            logger.warn("Port $portNumber is not available")
+            logger.warn("Port ${svetConfig.connectConfig.portNumber} is not available")
             doWork = false
             return
         }
 
-        logger.info("Connect to port $portNumber")
+        logger.info("Connect to port ${svetConfig.connectConfig.portNumber}")
 
         var fault = true
         try {
@@ -87,23 +72,22 @@ class Svet {
             )
             fault = false
         } catch (ex: UninitializedPropertyAccessException){
-            logger.error("Uninitialized property exception during connect to port $portNumber error", ex)
+            logger.error("Uninitialized property exception during connect to port ${svetConfig.connectConfig.portNumber} error", ex)
         } catch (ex: SerialPortException) {
-            logger.error("Serial port exception during connect to port $portNumber error", ex)
+            logger.error("Serial port exception during connect to port ${svetConfig.connectConfig.portNumber} error", ex)
         } catch (ex: UnsupportedEncodingException) {
-            logger.error("Unsupported encoding exception during connect to port $portNumber error", ex)
+            logger.error("Unsupported encoding exception during connect to port ${svetConfig.connectConfig.portNumber} error", ex)
         } catch (ex: Exception) {
-            logger.error("Connect to port $portNumber error", ex)
+            logger.error("Connect to port ${svetConfig.connectConfig.portNumber} error", ex)
         }
 
         doWork = if (!fault) {
-            Thread.sleep(arduinoRebootTimeout) // arduino reboot timeout
-            logger.info("Connect to port $portNumber success")
+            Thread.sleep(svetConfig.connectConfig.arduinoRebootTimeout) // arduino reboot timeout
+            logger.info("Connect to port ${svetConfig.connectConfig.portNumber} success")
             true
         } else {
             false
         }
-
     }
 
     suspend fun disconnect() {
@@ -114,48 +98,51 @@ class Svet {
             return
         }
 
-        logger.info("Disconnect from port $portNumber")
+        logger.info("Disconnect from port ${svetConfig.connectConfig.portNumber}")
         try {
             serialPort?.closePort()
         } catch (ex: SerialPortException) {
-            logger.error("Disconnect from port $portNumber error", ex)
+            logger.error("Disconnect from port ${svetConfig.connectConfig.portNumber} error", ex)
             return
         }
 
-        logger.info("Disconnect from port $portNumber success")
+        logger.info("Disconnect from port ${svetConfig.connectConfig.portNumber} success")
     }
 
     suspend fun reconnect() {
-        logger.info("Reconnect to port $portNumber")
+        logger.info("Reconnect to port ${svetConfig.connectConfig.portNumber}")
         disconnect()
         connect()
     }
 
     fun showRandomScene() {
-        while (doWork) {
-            serialPort?.writeBytes(Utils.preparerRandomBuffer(config).toByteArray())
-            Thread.sleep(1L)
+        if (serialPort == null) {
+            logger.info("COM port is not available, random scene is not Launched")
+            return
         }
-    }
 
-    fun showScene() {
-        while (doWork) {
-            serialPort?.writeBytes(
-                captureScreen.updateAdaBuffer(
-                    captureScreen.getRegionsCaptureColors(captureScreen.capture(), config),
-                    config
-                ).toByteArray()
-            )
-            Thread.sleep(1L)
-
-            print("\rFPS: ${1000L / (System.currentTimeMillis() - fpsTime)}")
-            fpsTime = System.currentTimeMillis()
+        job = scope.launch {
+            while (doWork) {
+                val elapsedTime = measureTimeMillis {
+                    serialPort?.writeBytes(Utils.preparerRandomBuffer(svetConfig.captureConfig).toByteArray())
+                    delay(100)
+                }
+                print("\rFPS: ${1000L / (elapsedTime + 1)}; elapsed: $elapsedTime ms")
+            }
+            logger.info("Random scene stopped")
         }
+
+        logger.info("Random scene Launched")
     }
 
     fun showSolidColor(color: Color) {
+        if (serialPort == null) {
+            logger.info("COM port is not available, solid color is not installed")
+            return
+        }
+
         serialPort?.writeBytes(
-            captureScreen.updateAdaBuffer(color, config).toByteArray()
+            captureScreen.updateAdaBuffer(color, svetConfig.captureConfig).toByteArray()
         )
     }
 
@@ -171,12 +158,12 @@ class Svet {
 
                     serialPort?.writeBytes(
                         captureScreen.updateAdaBuffer(
-                            captureScreen.getRegionsCaptureColors(captureScreen.capture(), config),
-                            config
+                            captureScreen.getRegionsCaptureColors(captureScreen.capture(), svetConfig.captureConfig),
+                            svetConfig.captureConfig
                         ).toByteArray()
                     )
 
-                    delay(5000)
+                    delay(1)
                 }
                 print("\rFPS: ${1000L / (elapsedTime + 1)}; elapsed: $elapsedTime ms")
             }

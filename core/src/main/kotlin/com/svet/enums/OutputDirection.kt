@@ -1,6 +1,8 @@
 package com.svet.enums
 
-// направление вывода цветов на LED ленту:
+/**
+ * Направление вывода цветов на LED ленту.
+ **/
 enum class OutputDirection {
     CLOCKWISE,       // <---- по часовой стреке
     COUNTERCLOCKWISE // ----> против часовой стрелки
@@ -8,13 +10,13 @@ enum class OutputDirection {
     /**
      *    CLOCKWISE:
      * --------------->
-     * |     SWET     |
+     * |     SVET     |
      * <----  ||  <----
      *      ======
      *
      * COUNTERCLOCKWISE:
      * <---------------
-     * |     SWET     |
+     * |     SVET     |
      * ---->  ||  ---->
      *      ======
      */
