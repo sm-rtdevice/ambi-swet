@@ -146,6 +146,28 @@ class Svet {
         )
     }
 
+    fun showSolidColor(color: Color, save: Boolean) {
+        if (serialPort == null) {
+            logger.info("COM port is not available, solid color is not installed")
+            return
+        }
+
+        serialPort?.writeBytes(
+            Utils.showSolidColorCmd(color, save).toByteArray()
+        )
+    }
+
+    fun setStartupMode(mode: Byte) {
+        if (serialPort == null) {
+            logger.info("COM port is not available, startup mode is not installed")
+            return
+        }
+
+        serialPort?.writeBytes(
+            Utils.setStartupModeCmd(mode).toByteArray()
+        )
+    }
+
     suspend fun launchCapture() {
         if (serialPort == null) {
             logger.info("COM port is not available, capture is not Launched")

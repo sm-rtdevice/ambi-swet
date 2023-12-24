@@ -15,6 +15,9 @@ suspend fun main(args: Array<String>) {
 //    svet.showRandomScene()
 //    svet.showSolidColor(Color(255,255,0))
 
+//    svet.showSolidColor(Color(128,92,30), true) // запомнить цвет
+//    svet.setStartupMode(1) // выводить при старте
+
     val exitCmd = readLine()
 
     svet.disconnect()

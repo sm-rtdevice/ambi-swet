@@ -1,6 +1,7 @@
 package com.svet.utils
 
 import com.svet.config.CaptureConfig
+import com.svet.enums.ArduinoCommands
 import com.svet.processor.ImageProcessorUtils
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -59,7 +60,12 @@ class Utils {
             return result
         }
 
-
+        /**
+         * Вывод случайного цвета на все светодиоды.
+         *
+         * @param captureConfig конфигурация захвата экрана
+         * @return массив байтов для контроллера
+         **/
         fun preparerRandomBuffer(captureConfig: CaptureConfig): List<Byte> {
             val buffer = ArrayList<Byte>(captureConfig.initialCapacity)
 
@@ -125,9 +131,48 @@ class Utils {
             return buffer
         }
 
+        /**
+         * Вывод сплошного цвета на все светодиоды.
+         *
+         * @param color выводимый цвет
+         * @param save true - сохранить, false - не сохранять цвет в eeprom контроллера
+         * @return массив байтов для контроллера
+         **/
+        fun showSolidColorCmd(color: Color, save: Boolean): List<Byte> {
+            val hi: Byte = 0
+            val lo: Byte = 0
+            val chk: Byte = 0x55
+
+            return listOf(
+                'c'.code.toByte(), 'm'.code.toByte(), 'd'.code.toByte(),
+                hi, lo, chk, // CRC?
+                ArduinoCommands.SHOW_SOLID_COLOR_CMD.cmd,
+                color.red.toByte(),
+                color.green.toByte(),
+                color.blue.toByte(),
+                if (save) 1 else 0
+            )
+        }
+
+        /**
+         * Установить режим отображения при включении контроллера.
+         *
+         * @param mode режим отображения: 1 - отображать сохранённый цвет при включении контроллера, 0 - не отображать
+         * @return массив байтов для контроллера
+         **/
+        fun setStartupModeCmd(mode: Byte): List<Byte> {
+            val hi: Byte = 0
+            val lo: Byte = 0
+            val chk: Byte = 0x55
+
+            return listOf(
+                'c'.code.toByte(), 'm'.code.toByte(), 'd'.code.toByte(),
+                hi, lo, chk, // CRC?
+                ArduinoCommands.SET_STARTUP_MODE_CMD.cmd,
+                mode
+            )
+        }
     }
-
-
 
 //    @Throws(Exception::class)
 //    fun getCapacity(al: List<*>?): Int {
