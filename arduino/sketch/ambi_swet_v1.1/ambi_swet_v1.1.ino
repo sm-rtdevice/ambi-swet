@@ -53,6 +53,8 @@ void setup()
 
   if(GET_START_UP_MODE == 1) {
     LEDS.showColor(CRGB(GET_R, GET_G, GET_B));
+  } else {
+    LEDS.showColor(CRGB(0, 0, 0));
   }
 
   Serial.begin(serialRate);
