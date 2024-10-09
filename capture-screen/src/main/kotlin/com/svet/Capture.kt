@@ -9,7 +9,7 @@ import com.svet.enums.ProgramMode.SET_STARTUP_MODE
 import java.awt.Color
 import kotlin.system.exitProcess
 
-suspend fun main(args: Array<String>) {
+suspend fun main(args: Array<String>) { // test commit
     println("Program ambient-svet-capture was started")
     println("Program arguments: ${args.joinToString()}")
 
