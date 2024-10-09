@@ -6,6 +6,7 @@ import com.svet.enums.ProgramMode.CAPTURE
 import com.svet.enums.ProgramMode.RANDOM_SCENE
 import com.svet.enums.ProgramMode.SET_SOLID_COLOR
 import com.svet.enums.ProgramMode.SET_STARTUP_MODE
+import com.svet.enums.ProgramMode.TEST_MODE
 import java.awt.Color
 import kotlin.system.exitProcess
 
@@ -18,7 +19,7 @@ suspend fun main(args: Array<String>) { // test commit
     svet.connect()
 
     val mode = ProgramMode.from(parseOptional(args, 0))
-
+//    val mode = TEST_MODE
     when (mode) {
         CAPTURE -> svet.launchCapture()
         RANDOM_SCENE -> svet.showRandomScene()
@@ -44,6 +45,9 @@ suspend fun main(args: Array<String>) { // test commit
                 println("Unknown startup mode '$on' not set. Available: 0 (off) or 1 (on)")
             }
             exitProcess(0)
+        }
+        TEST_MODE -> {
+            svet.gradient()
         }
     }
 

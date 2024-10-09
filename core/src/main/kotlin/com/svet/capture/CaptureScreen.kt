@@ -61,6 +61,10 @@ class CaptureScreen {
             buffer[capOffset + step * i] = regionCaptureColors[i].red.toByte()
             buffer[capOffset + step * i + 1] = regionCaptureColors[i].green.toByte()
             buffer[capOffset + step * i + 2] = regionCaptureColors[i].blue.toByte()
+            // todo: test average color
+//            buffer[capOffset + step * i] = getAverageColorChannel(regionCaptureColors[i].red.toByte(), buffer[capOffset + step * i])
+//            buffer[capOffset + step * i + 1] = getAverageColorChannel(regionCaptureColors[i].green.toByte(), buffer[capOffset + step * i + 1])
+//            buffer[capOffset + step * i + 2] = getAverageColorChannel(regionCaptureColors[i].blue.toByte(), buffer[capOffset + step * i + 2])
         }
 
         return buffer

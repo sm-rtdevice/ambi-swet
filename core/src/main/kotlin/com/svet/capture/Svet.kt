@@ -1,6 +1,7 @@
 package com.svet.capture
 
 import com.svet.config.SvetConfig
+import com.svet.processor.ImageProcessorUtils
 import com.svet.utils.Utils
 import jssc.SerialPort
 import jssc.SerialPortException
@@ -193,6 +194,74 @@ class Svet {
         }
 
         logger.info("Capture Launched")
+    }
+
+    suspend fun blink() {
+        if (serialPort == null) {
+            logger.info("COM port is not available, blink is not Launched")
+            return
+        }
+
+        var fon = Color(0, 0, 0)
+        var i = 0
+
+        job = scope.launch {
+            while (doWork) {
+                val elapsedTime = measureTimeMillis {
+                    serialPort?.writeBytes(Utils.showSolidColorCmd(fon, false).toByteArray())
+
+//                    logger.info("color: $i")
+                    fon = Color(i, i, i)
+                    i = (i + 5) % 250
+
+                    delay(1)
+                }
+                print("\rFPS: ${1000L / (elapsedTime + 1)}; elapsed: $elapsedTime ms")
+            }
+            logger.info("blink stopped")
+        }
+
+        logger.info("blink Launched")
+    }
+
+    /**
+     * Градиент перехода между двумя цветами с заданной дискретностью.
+     **/
+    suspend fun gradient() {
+        if (serialPort == null) {
+            logger.info("COM port is not available, gradient is not Launched")
+            return
+        }
+
+        val startColor = Color(0, 0, 255) // Начальный цвет (красный)
+        val endColor = Color(255, 0, 0) // Конечный цвет (синий)
+
+        val steps = 100 // Дискретность градиента
+
+        val gradient = ImageProcessorUtils.calculateGradient(startColor, endColor, steps)
+        var i = 0
+        var vector = 1
+
+        job = scope.launch {
+            while (doWork) {
+                val elapsedTime = measureTimeMillis {
+//                    logger.info("color: $i")
+                    serialPort?.writeBytes(Utils.showSolidColorCmd(gradient[i], false).toByteArray())
+//                    // в одном направлении
+//                    i = (i + vector) % (steps + 1)
+
+                    // в обоих направлениях
+                    i += vector
+                    if (i >= steps || i <= 0) { vector *= -1 }
+
+                    delay(10)
+                }
+                print("\rFPS: ${1000L / (elapsedTime + 1)}; elapsed: $elapsedTime ms")
+            }
+            logger.info("gradient stopped")
+        }
+
+        logger.info("gradient Launched")
     }
 
 }

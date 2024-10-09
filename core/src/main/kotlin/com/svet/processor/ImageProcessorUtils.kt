@@ -75,6 +75,32 @@ class ImageProcessorUtils {
 
             return Color((red / count).toInt(), (green / count).toInt(), (blue / count).toInt())
         }
+
+        fun getAverageColorChannel(first: Byte, second: Byte): Byte {
+            return ((first + second) / 2).toByte()
+        }
+
+        /**
+         * Рассчет градиента перехода между цветами с заданной дискретностью.
+         *
+         * @param startColor начальный цвет
+         * @param endColor конечный цвет
+         * @param steps дискретность [1..255]
+         * @return градиент перехода [steps + 1]
+         */
+        fun calculateGradient(startColor: Color, endColor: Color, steps: Int): List<Color> {
+            val gradient = mutableListOf<Color>() // todo: replace List
+            val stepSize = 1.0 / steps
+            for (i in 0..steps) {
+                val ratio = i * stepSize
+                val red = (startColor.red * (1 - ratio) + endColor.red * ratio).toInt()
+                val green = (startColor.green * (1 - ratio) + endColor.green * ratio).toInt()
+                val blue = (startColor.blue * (1 - ratio) + endColor.blue * ratio).toInt()
+                gradient.add(Color(red, green, blue))
+            }
+
+            return gradient
+        }
     }
 
 }
