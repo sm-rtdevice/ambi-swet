@@ -1,6 +1,6 @@
 package com.svet.config
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.nio.file.Files
 import java.nio.file.Paths
 

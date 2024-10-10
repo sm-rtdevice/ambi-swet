@@ -3,13 +3,18 @@ package com.svet.capture
 import com.svet.config.SvetConfig
 import com.svet.processor.ImageProcessorUtils
 import com.svet.utils.Utils
+import io.github.oshai.kotlinlogging.KotlinLogging
+import java.awt.Color
+import java.io.UnsupportedEncodingException
 import jssc.SerialPort
 import jssc.SerialPortException
 import jssc.SerialPortList
-import mu.KotlinLogging
-import java.awt.Color
-import kotlinx.coroutines.*
-import java.io.UnsupportedEncodingException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.system.measureTimeMillis
 
 private val logger = KotlinLogging.logger {}

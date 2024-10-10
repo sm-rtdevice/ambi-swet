@@ -1,5 +1,5 @@
 import com.svet.config.CaptureConfig
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.awt.Color

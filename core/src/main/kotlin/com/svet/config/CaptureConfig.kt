@@ -1,7 +1,7 @@
 package com.svet.config
 
 import com.svet.enums.OutputDirection
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 
@@ -11,7 +11,7 @@ private val logger = KotlinLogging.logger {}
 class CaptureConfig {
 
     // количество зон:
-    // с верху 32
+    // сверху 32
     // по вертиккали 20
     // вырез снизу 6
 
