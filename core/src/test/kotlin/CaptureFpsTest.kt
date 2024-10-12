@@ -1,5 +1,4 @@
 import com.svet.config.CaptureConfig
-import io.github.oshai.kotlinlogging.KotlinLogging
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.awt.Color
@@ -7,8 +6,6 @@ import java.awt.Rectangle
 import java.awt.Robot
 import java.awt.Toolkit
 import java.awt.image.BufferedImage
-
-private val logger = KotlinLogging.logger {}
 
 class CaptureTest {
    // private lateinit var config: CaptureConfig

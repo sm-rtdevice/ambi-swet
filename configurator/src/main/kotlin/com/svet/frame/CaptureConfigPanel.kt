@@ -14,7 +14,6 @@ import java.awt.image.BufferedImage
 import javax.swing.JPanel
 import javax.swing.Timer
 
-
 class CaptureConfigPanel internal constructor() : JPanel(), ActionListener {
 
     private val svetConfig = SvetConfig()

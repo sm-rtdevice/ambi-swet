@@ -2,14 +2,11 @@ package com.svet.capture
 
 import com.svet.config.CaptureConfig
 import com.svet.processor.ImageProcessorUtils
-import io.github.oshai.kotlinlogging.KotlinLogging
 import java.awt.Color
 import java.awt.Rectangle
 import java.awt.Robot
 import java.awt.Toolkit
 import java.awt.image.BufferedImage
-
-private val logger = KotlinLogging.logger {}
 
 class CaptureScreen {
 
@@ -28,7 +25,7 @@ class CaptureScreen {
         }
     }
 
-    fun capture() : BufferedImage {
+    fun capture(): BufferedImage {
         return robot.createScreenCapture(screenRect)
     }
 
