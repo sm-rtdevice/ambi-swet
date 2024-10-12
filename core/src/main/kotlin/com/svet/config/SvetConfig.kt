@@ -4,7 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import java.nio.file.Files
 import java.nio.file.Paths
 
-private val logger = KotlinLogging.logger {}
+private val log = KotlinLogging.logger {}
 
 /**
  * Конфигурация приложения.
@@ -33,7 +33,7 @@ class SvetConfig {
     }
 
     private fun loadConnectConfig() {
-        logger.info("Loading connect configuration...")
+        log.debug { "Loading connect configuration..." }
 
         connectConfig = ConfigHelper.loadConfig(
             resolveConfigFileName(connectConfigFileName),
@@ -41,11 +41,11 @@ class SvetConfig {
             ConnectConfig() // TODO: ConnectConfig.defaultConfig()
         )
 
-        logger.info("Loading connect configuration done")
+        log.debug { "Loading connect configuration done" }
     }
 
     private fun loadCaptureConfig() {
-        logger.info("Loading capture configuration...")
+        log.debug { "Loading capture configuration..." }
 
         captureConfig = ConfigHelper.loadConfig(
             resolveConfigFileName(captureConfigFileName),
@@ -54,10 +54,10 @@ class SvetConfig {
         )
 
         if (captureConfig.positions.isEmpty()) {
-            logger.warn("Capture regions configuration was not loaded")
+            log.warn { "Capture regions configuration was not loaded" }
         }
 
-        logger.info("Loading capture configuration done")
+        log.debug { "Loading capture configuration done" }
     }
 
     fun saveConnectConfig() {

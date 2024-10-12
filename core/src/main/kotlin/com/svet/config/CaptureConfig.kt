@@ -3,7 +3,7 @@ package com.svet.config
 import com.svet.enums.OutputDirection
 import io.github.oshai.kotlinlogging.KotlinLogging
 
-private val logger = KotlinLogging.logger {}
+private val log = KotlinLogging.logger {}
 
 /**
  * Конфигурация захвата экрана.
@@ -115,7 +115,7 @@ class CaptureConfig {
 
     companion object {
         fun defaultConfig(): CaptureConfig {
-            logger.info("Create default configuration")
+            log.debug { "Create default configuration" }
             val result = CaptureConfig()
             result.defaultConfig()
             return result

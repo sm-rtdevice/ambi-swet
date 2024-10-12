@@ -17,7 +17,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.system.measureTimeMillis
 
-private val logger = KotlinLogging.logger {}
+private val log = KotlinLogging.logger {}
 
 class Svet {
     private val svetConfig = SvetConfig()
@@ -29,15 +29,15 @@ class Svet {
     @Volatile private var doWork = true
 
     private fun loadConfigs() {
-        logger.info("Loading configuration...")
+        log.debug { "Loading configuration..." }
         // test configuration
         svetConfig.connectConfig.portNumber = "COM4"
         svetConfig.connectConfig.detectPorts = true
-        logger.info("Loading configuration done")
+        log.debug { "Loading configuration done" }
     }
 
     fun init() {
-        logger.info("Start initialization...")
+        log.info { "Start initialization..." }
 
         loadConfigs()
 
@@ -45,27 +45,27 @@ class Svet {
             val portNames = SerialPortList.getPortNames()
             if (portNames.isNotEmpty()) {
                 for (portName in portNames) {
-                    logger.info("Available com port: $portName")
+                    log.info { "Available com port: $portName" }
                 }
             } else {
-                logger.info("No available com ports found")
+                log.info { "No available com ports found" }
                 return
             }
         }
 
         serialPort = SerialPort(svetConfig.connectConfig.portNumber)
 
-        logger.info("Initialization done")
+        log.info { "Initialization done" }
     }
 
     fun connect() {
         if (serialPort == null) {
-            logger.warn("Port ${svetConfig.connectConfig.portNumber} is not available")
+            log.warn { "Port ${svetConfig.connectConfig.portNumber} is not available" }
             doWork = false
             return
         }
 
-        logger.info("Connect to port ${svetConfig.connectConfig.portNumber}")
+        log.info { "Connect to port ${svetConfig.connectConfig.portNumber}" }
 
         var fault = true
         try {
@@ -77,19 +77,19 @@ class Svet {
                 SerialPort.PARITY_NONE
             )
             fault = false
-        } catch (ex: UninitializedPropertyAccessException){
-            logger.error("Uninitialized property exception during connect to port ${svetConfig.connectConfig.portNumber} error", ex)
+        } catch (ex: UninitializedPropertyAccessException) {
+            log.error(ex) { "Uninitialized property exception during connect to port ${svetConfig.connectConfig.portNumber}" }
         } catch (ex: SerialPortException) {
-            logger.error("Serial port exception during connect to port ${svetConfig.connectConfig.portNumber} error", ex)
+            log.error(ex) { "Serial port exception during connect to port ${svetConfig.connectConfig.portNumber}" }
         } catch (ex: UnsupportedEncodingException) {
-            logger.error("Unsupported encoding exception during connect to port ${svetConfig.connectConfig.portNumber} error", ex)
+            log.error(ex) { "Unsupported encoding exception during connect to port ${svetConfig.connectConfig.portNumber}" }
         } catch (ex: Exception) {
-            logger.error("Connect to port ${svetConfig.connectConfig.portNumber} error", ex)
+            log.error(ex) { "Connect to port ${svetConfig.connectConfig.portNumber}" }
         }
 
         doWork = if (!fault) {
             Thread.sleep(svetConfig.connectConfig.arduinoRebootTimeout) // arduino reboot timeout
-            logger.info("Connect to port ${svetConfig.connectConfig.portNumber} success")
+            log.info { "Connect to port ${svetConfig.connectConfig.portNumber} success" }
             true
         } else {
             false
@@ -104,26 +104,26 @@ class Svet {
             return
         }
 
-        logger.info("Disconnect from port ${svetConfig.connectConfig.portNumber}")
+        log.info { "Disconnect from port ${svetConfig.connectConfig.portNumber}" }
         try {
             serialPort?.closePort()
         } catch (ex: SerialPortException) {
-            logger.error("Disconnect from port ${svetConfig.connectConfig.portNumber} error", ex)
+            log.error(ex) { "Disconnect from port ${svetConfig.connectConfig.portNumber}" }
             return
         }
 
-        logger.info("Disconnect from port ${svetConfig.connectConfig.portNumber} success")
+        log.info { "Disconnect from port ${svetConfig.connectConfig.portNumber} success" }
     }
 
     suspend fun reconnect() {
-        logger.info("Reconnect to port ${svetConfig.connectConfig.portNumber}")
+        log.info { "Reconnect to port ${svetConfig.connectConfig.portNumber}" }
         disconnect()
         connect()
     }
 
     fun showRandomScene() {
         if (serialPort == null) {
-            logger.info("COM port is not available, random scene is not Launched")
+            log.warn { "COM port is not available, random scene is not Launched" }
             return
         }
 
@@ -135,15 +135,15 @@ class Svet {
                 }
                 print("\rFPS: ${1000L / (elapsedTime + 1)}; elapsed: $elapsedTime ms")
             }
-            logger.info("Random scene stopped")
+            log.info { "Random scene stopped" }
         }
 
-        logger.info("Random scene Launched")
+        log.info { "Random scene Launched" }
     }
 
     fun showSolidColor(color: Color) {
         if (serialPort == null) {
-            logger.info("COM port is not available, solid color is not installed")
+            log.warn { "COM port is not available, solid color is not installed" }
             return
         }
 
@@ -154,7 +154,7 @@ class Svet {
 
     fun showSolidColor(color: Color, save: Boolean) {
         if (serialPort == null) {
-            logger.info("COM port is not available, solid color is not installed")
+            log.warn { "COM port is not available, solid color is not installed" }
             return
         }
 
@@ -165,7 +165,7 @@ class Svet {
 
     fun setStartupMode(mode: Byte) {
         if (serialPort == null) {
-            logger.info("COM port is not available, startup mode is not installed")
+            log.warn { "COM port is not available, startup mode is not installed" }
             return
         }
 
@@ -176,7 +176,7 @@ class Svet {
 
     suspend fun launchCapture() {
         if (serialPort == null) {
-            logger.info("COM port is not available, capture is not Launched")
+            log.warn { "COM port is not available, capture is not Launched" }
             return
         }
 
@@ -195,15 +195,15 @@ class Svet {
                 }
                 print("\rFPS: ${1000L / (elapsedTime + 1)}; elapsed: $elapsedTime ms")
             }
-            logger.info("Capture stopped")
+            log.info { "Capture stopped" }
         }
 
-        logger.info("Capture Launched")
+        log.info { "Capture Launched" }
     }
 
     suspend fun blink() {
         if (serialPort == null) {
-            logger.info("COM port is not available, blink is not Launched")
+            log.warn { "COM port is not available, blink is not Launched" }
             return
         }
 
@@ -223,10 +223,10 @@ class Svet {
                 }
                 print("\rFPS: ${1000L / (elapsedTime + 1)}; elapsed: $elapsedTime ms")
             }
-            logger.info("blink stopped")
+            log.info { "blink stopped" }
         }
 
-        logger.info("blink Launched")
+        log.info { "blink Launched" }
     }
 
     /**
@@ -234,7 +234,7 @@ class Svet {
      **/
     suspend fun gradient() {
         if (serialPort == null) {
-            logger.info("COM port is not available, gradient is not Launched")
+            log.warn { "COM port is not available, gradient is not Launched" }
             return
         }
 
@@ -263,10 +263,10 @@ class Svet {
                 }
                 print("\rFPS: ${1000L / (elapsedTime + 1)}; elapsed: $elapsedTime ms")
             }
-            logger.info("gradient stopped")
+            log.info { "gradient stopped" }
         }
 
-        logger.info("gradient Launched")
+        log.info { "gradient Launched" }
     }
 
 }

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.nio.file.Paths
 
-private val logger = KotlinLogging.logger {}
+private val log = KotlinLogging.logger {}
 
 /**
  * Загрузка/сохранение конфигурации.
@@ -16,7 +16,7 @@ object ConfigHelper {
         val config: T = try {
             ObjectMapper().readValue(Paths.get(fileName).toFile(), valueType)
         } catch (e: Exception) {
-            logger.info("No valid configuration found. Create config by default.")
+            log.info { "No valid configuration found. Create config by default." }
             // TODO: save if not exist config file (if flag == true)
             defaultConfig
         }
@@ -28,7 +28,7 @@ object ConfigHelper {
         try {
             ObjectMapper().writeValue(Paths.get(fileName).toFile(), config)
         } catch (e: Exception) {
-            logger.error("Error during saving configuration.")
+            log.error(e) { "Error during saving configuration" }
         }
     }
 
