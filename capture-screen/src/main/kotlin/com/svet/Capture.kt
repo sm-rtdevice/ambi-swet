@@ -7,12 +7,17 @@ import com.svet.enums.ProgramMode.RANDOM_SCENE
 import com.svet.enums.ProgramMode.SET_SOLID_COLOR
 import com.svet.enums.ProgramMode.SET_STARTUP_MODE
 import com.svet.enums.ProgramMode.TEST_MODE
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.awt.Color
 import kotlin.system.exitProcess
 
+private val log = KotlinLogging.logger {}
+
 suspend fun main(args: Array<String>) {
-    println("Program ambient-svet-capture was started")
-    println("Program arguments: ${args.joinToString()}")
+    log.info {
+        if (args.isNotEmpty()) { "Ambient svet capture started with arguments: ${args.joinToString()}" }
+        else { "Ambient svet capture started" }
+    }
 
     val svet = Svet()
     svet.init()
@@ -29,20 +34,20 @@ suspend fun main(args: Array<String>) {
             val b = parse(args, 3)
             val save = parse(args, 4)
             if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
-                println("Invalid RGB params")
+                log.warn { "Invalid RGB params" }
                 exitProcess(1)
             }
             svet.showSolidColor(Color(r, g, b), save == 1)
-            println("Set solid color is done")
+            log.info { "Set solid color is done" }
             exitProcess(0)
         }
         SET_STARTUP_MODE -> { // включение монотонной подсветки при старте, for example program arguments: 3 1
             val on = parse(args, 1)
             if (on == 0 || on == 1) {
                 svet.setStartupMode(on.toByte())
-                println("Set startup mode '$on' is done")
+                log.info { "Set startup mode '$on' is done" }
             } else {
-                println("Unknown startup mode '$on' not set. Available: 0 (off) or 1 (on)")
+                log.warn { "Unknown startup mode '$on' not set. Available: 0 (off) or 1 (on)" }
             }
             exitProcess(0)
         }
@@ -54,7 +59,7 @@ suspend fun main(args: Array<String>) {
     val exitCmd = readlnOrNull()
 
     svet.disconnect()
-    println("End program with command: $exitCmd")
+    log.info { "End program with command: $exitCmd" }
 }
 
 fun parseOptional(args: Array<String>, index: Int): Int? {
@@ -65,7 +70,7 @@ fun parseOptional(args: Array<String>, index: Int): Int? {
 fun parse(args: Array<String>, index: Int): Int {
     val param = parseOptional(args, index)
     if (param == null) {
-        println("Missing argument by index $index")
+        log.warn { "Missing argument by index $index" }
         exitProcess(1)
     }
     return param

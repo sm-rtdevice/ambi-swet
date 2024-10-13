@@ -1,9 +1,12 @@
 package com.svet.frame
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.awt.Color
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import javax.swing.JFrame
+
+private val log = KotlinLogging.logger {}
 
 class CaptureConfigFrame internal constructor() : JFrame("Press ESC to exit") {
 
@@ -23,7 +26,7 @@ class CaptureConfigFrame internal constructor() : JFrame("Press ESC to exit") {
         addKeyListener(object : KeyAdapter() {
             override fun keyPressed(evt: KeyEvent) {
                 if (evt.keyCode == KeyEvent.VK_ESCAPE) {
-                    println("close frame")
+                    log.info { "close frame" }
                     panel.timer.stop()
                     dispose() // exitProcess(0)
                 }

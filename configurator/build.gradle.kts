@@ -11,6 +11,9 @@ plugins {
 
 dependencies {
     implementation(project(":core"))
+
+    implementation(libs.kotlin.logging.jvm)
+    implementation(libs.logback.classic)
 }
 
 val compileKotlin: KotlinCompile by tasks
