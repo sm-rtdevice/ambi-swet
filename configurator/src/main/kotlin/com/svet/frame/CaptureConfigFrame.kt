@@ -17,7 +17,7 @@ class CaptureConfigFrame internal constructor() : JFrame("Press ESC to exit") {
         this.extendedState = MAXIMIZED_BOTH
         this.isUndecorated = true
         this.add(panel)
-        pack()
+//        pack()
         setLocationRelativeTo(null)
         this.isVisible = true
 //        this.background = Color.DARK_GRAY

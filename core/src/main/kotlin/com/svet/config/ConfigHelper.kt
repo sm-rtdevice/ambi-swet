@@ -16,7 +16,7 @@ object ConfigHelper {
         val config: T = try {
             ObjectMapper().readValue(Paths.get(fileName).toFile(), valueType)
         } catch (e: Exception) {
-            log.info { "No valid configuration found. Create config by default." }
+            log.debug { "No valid configuration found. Create config by default." }
             // TODO: save if not exist config file (if flag == true)
             defaultConfig
         }

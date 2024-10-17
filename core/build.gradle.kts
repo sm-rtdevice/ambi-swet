@@ -26,7 +26,6 @@ dependencies {
 
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.compilerOptions {
-    freeCompilerArgs.add("-Xencoding=UTF-8")
     freeCompilerArgs.add("-Xjsr305=strict")
     jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
 }

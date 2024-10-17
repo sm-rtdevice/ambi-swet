@@ -70,6 +70,7 @@ class CaptureScreen {
         return buffer
     }
 
+    //showSolidColor
     fun updateAdaBuffer(color: Color, captureConfig: CaptureConfig): List<Byte> {
         val capOffset = 6
         val step = 3
