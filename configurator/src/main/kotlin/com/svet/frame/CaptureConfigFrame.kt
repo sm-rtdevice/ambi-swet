@@ -18,10 +18,14 @@ class CaptureConfigFrame internal constructor() : JFrame("Press ESC to exit") {
         this.isUndecorated = true
         this.add(panel)
 //        pack()
+//        this.setLocation(0, 0)
+//        this.setSize(1920, 1800)
+
         setLocationRelativeTo(null)
-        this.isVisible = true
 //        this.background = Color.DARK_GRAY
         this.background = Color(0, 0, 0, 0)
+//        this.opacity = 0.5f
+        this.isVisible = true
 
         addKeyListener(object : KeyAdapter() {
             override fun keyPressed(evt: KeyEvent) {

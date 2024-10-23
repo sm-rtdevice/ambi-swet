@@ -12,7 +12,7 @@ class CaptureScreen {
 
     private val screenRect = Rectangle(Toolkit.getDefaultToolkit().screenSize)
     private val robot = Robot()
-    private var buffer = ArrayList<Byte>(288)
+    private var buffer = ArrayList<Byte>(288) //TODO: get from config
 
     init {
         buffer.addAll(listOf('A'.code.toByte(), 'd'.code.toByte(), 'a'.code.toByte()))
@@ -20,7 +20,7 @@ class CaptureScreen {
         val lo: Byte = 0
         val chk: Byte = 0x55
         buffer.addAll(listOf(hi, lo, chk))
-        for (i in 6 + 1..288) {
+        for (i in 6 + 1..288) { //TODO: get from config
             buffer.add(0)
         }
     }
@@ -33,6 +33,11 @@ class CaptureScreen {
     fun getRegionsCaptureColors(capturedScreenshot: BufferedImage, captureConfig: CaptureConfig): List<Color> {
 
         //TODO: check out of bounds
+        if (capturedScreenshot.width != captureConfig.width || capturedScreenshot.height != captureConfig.height) {
+            //reInitPositions: captureConfig.positions[] = ...
+            logger.error("Change resolution size during work not supported yet")
+            throw IndexOutOfBoundsException("TODO: change resolution size during work")
+        }
 
         val result = ArrayList<Color>(captureConfig.positions.size)
 
@@ -81,6 +86,14 @@ class CaptureScreen {
         }
 
         return buffer
+    }
+
+    // использовать в svet
+    fun getAdaBuffer(captureConfig: CaptureConfig): ByteArray {
+        return updateAdaBuffer(
+            getRegionsCaptureColors(capture(), captureConfig),
+            captureConfig
+        ).toByteArray()
     }
 
 }
