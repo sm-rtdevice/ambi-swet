@@ -1,0 +1,9 @@
+//    @Throws(Exception::class)
+//    fun getCapacity(al: List<*>?): Int {
+//        val field: Field = ArrayList::class.java.getDeclaredField("elementData")
+//        field.isAccessible = true
+//        return (field.get(al) as Array<*>).size
+//    }
+
+initial capacity
+288 - 294

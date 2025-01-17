@@ -35,11 +35,10 @@ class SvetConfig {
     private fun loadConnectConfig() {
         log.debug { "Loading connect configuration..." }
 
-        connectConfig = ConfigHelper.loadConfig(
-            resolveConfigFileName(connectConfigFileName),
-            ConnectConfig::class.java,
-            ConnectConfig() // TODO: ConnectConfig.defaultConfig()
-        )
+        val loaded: ConnectConfig? =
+            ConfigHelper.load(resolveConfigFileName(connectConfigFileName), ConnectConfig::class.java)
+
+        connectConfig = loaded ?: ConnectConfig()
 
         log.debug { "Loading connect configuration done" }
     }
@@ -47,11 +46,10 @@ class SvetConfig {
     private fun loadCaptureConfig() {
         log.debug { "Loading capture configuration..." }
 
-        captureConfig = ConfigHelper.loadConfig(
-            resolveConfigFileName(captureConfigFileName),
-            CaptureConfig::class.java,
-            CaptureConfig.defaultConfig()
-        )
+        val loaded: CaptureConfig? =
+            ConfigHelper.load(resolveConfigFileName(captureConfigFileName), CaptureConfig::class.java)
+
+        captureConfig = loaded ?: CaptureConfig.defaultConfig()
 
         if (captureConfig.positions.isEmpty()) {
             log.warn { "Capture regions configuration was not loaded" }
@@ -62,12 +60,12 @@ class SvetConfig {
 
     fun saveConnectConfig() {
         Files.createDirectories(Paths.get(configDirectory))
-        ConfigHelper.saveConfig(resolveConfigFileName(connectConfigFileName), connectConfig)
+        ConfigHelper.save(resolveConfigFileName(connectConfigFileName), connectConfig)
     }
 
     fun saveCaptureConfig() {
         Files.createDirectories(Paths.get(configDirectory))
-        ConfigHelper.saveConfig(resolveConfigFileName(captureConfigFileName), captureConfig)
+        ConfigHelper.save(resolveConfigFileName(captureConfigFileName), captureConfig)
     }
 
     private fun resolveConfigFileName(fileName: String): String {

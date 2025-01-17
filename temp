@@ -1,0 +1,5 @@
+# use manifest:
+C:\Users\admin\.jdks\jdk-21.0.4\bin\java.exe -jar "C:\IdeaProjects\IdeaProjects\SirkinIS\ambi-svet\configurator\build\libs\configurator-0.0.1.jar"
+
+# use class path:
+C:\Users\admin\.jdks\jdk-21.0.4\bin\java.exe -cp C:\IdeaProjects\IdeaProjects\SirkinIS\ambi-svet\configurator\build\libs\configurator-0.0.1.jar com.svet.ConfiguratorKt

@@ -8,3 +8,4 @@ class ConnectConfig {
     var detectPorts: Boolean = true
     var arduinoRebootTimeout = 1500L
 }
+// TODO: ConnectConfig.defaultConfig()
